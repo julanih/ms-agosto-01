@@ -32,7 +32,7 @@ jobs:
 
     - name: Find jar
       run: |
-        ls-al target/*.jar
+        ls -al target/*.jar
     
     - name: Build image
       run: |
