@@ -1,0 +1,10 @@
+services:
+  ms-agosto-01-prd:
+    container_name: ms-agosto-01-prd
+    image: mauron/ms-agosto-01:v3
+    ports:
+      - "9092:8888"
+    environment:
+      - MESSAGE=hola produccion sin volumen
+      - TZ=Americas/Bogota
+    restart: unless-stopped
