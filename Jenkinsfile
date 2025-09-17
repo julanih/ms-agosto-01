@@ -38,7 +38,7 @@ pipeline {
             steps {
                 script {
                     def tag = env.BUILD_NUMBER
-                    def image = docker.builds("${DOKCERHUB_NAMESPACE}/${IMAGE_NAME}:${tag}")
+                    def image = docker.build("${DOKCERHUB_NAMESPACE}/${IMAGE_NAME}:${tag}")
                     docker.withRegistry("https://${REGISTRY}", 'dockerhub-creds') {
                         image.push()
                         image.push('latest')
