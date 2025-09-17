@@ -1,14 +1,38 @@
-    services:
-      jenkins:
-        image: jenkins/jenkins:lts
-        privileged: true
-        ports:
-          - "5080:8080"
-          - "50000:50000"
-        volumes:
-          - jenkins_home:/var/jenkins_home
-        environment:
-          - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
-
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
+    privileged: true
+    ports:
+      - "5080:8080"
+      - "50000:50000"
     volumes:
-      jenkins_home:
+      - jenkins_home:/var/jenkins_home
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
+    networks:
+      - devops
+  jenkins-slave:
+    image: eclipse-temurin:17-jdk
+    container_name: jenkins-slave
+    user: "0"
+    init: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+      - /Users/juliany/agente.jk:/home/jenkins/agent
+    working_dir: /home/jenkins/agent
+    command: >
+      sh -c "curl -sO http://jenkins:8080/jnlpJars/agent.jar;java -jar agent.jar -url http://jenkins:8080/ -secret f3996d356402ad815fd5b44df8031c686986441437607ef88e4974d65278fa95 -name slave -webSocket -workDir /home/jenkins/agent"
+    depends_on:
+      - jenkins
+    networks:
+      - devops
+volumes:
+  jenkins_home:
+  jenkins-slave_home:
+
+
+networks:
+  devops:
+    driver: bridge
