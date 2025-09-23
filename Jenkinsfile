@@ -38,22 +38,42 @@ pipeline {
             steps {
                 script {
                     def tag = env.BUILD_NUMBER
-                    def image = docker.build("${DOKCERHUB_NAMESPACE}/${IMAGE_NAME}:${tag}")
+                    def image = docker.build("${DOKCERHUB_NAMESPACE}/${IMAGE_NAME}:$BUILD_ID")
                     docker.withRegistry("https://${REGISTRY}", 'dockerhub-creds') {
-                        image.push()
-                        image.push('latest')
+                        image.push($BUILD_ID)
                     }
                 }
             }
         }
     }
 
-    post {
-        success {
-            echo 'Imagen publicada: ${env.REGISTRY}/${env.DOKCERHUB_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}'
+    stage('Deploy') {
+        steps {
+            script {
+                dir('docker') {
+                    // Reemplazar TAG en docker-compose.yaml con el número de build
+                    sh "sed -i '' 's#TAG#${env.BUILD_NUMBER}#g' docker-compose.yaml"
+
+                    // Reemplazar MESSAGE según la rama
+                    if (env.BRANCH_NAME == 'main') {
+                        sh "sed -i '' 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${URL_PRD}|' docker-compose.yaml"
+                    } else {
+                        sh "sed -i '' 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${URL_DEV}|' docker-compose.yaml"
+                    }
+
+                    // Mostrar el archivo modificado
+                    sh "cat docker-compose.yaml"
+
+                    // Levantar los servicios con docker-compose
+                    sh "docker compose up -d > /dev/null"
+                }
+            }
         }
-        failure {
-            echo 'Build fallido. Revisar logs.'
+    }
+
+    stage('Limpiar workspace') {
+        steps {
+            cleanWs()
         }
     }
 }
