@@ -57,13 +57,14 @@ jobs:
         cd docker
         sed -i '' 's#TAG#${{ github.run_number }}#g' docker-compose.yaml
         if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-          sed -i '' 's#^\(\s*- MESSAGE=\).*#\${{ vars.URL_PRD }}#' docker-compose.yaml
+          sed -i '' 's#^\(\s*- MESSAGE=\).*#\1${{ vars.URL_PRD }}#' docker-compose.yaml
         else
-          sed -i '' 's#^\(\s*- MESSAGE=\).*#\${{ vars.URL_PRD }}#' docker-compose.yaml
+          sed -i '' 's#^\(\s*- MESSAGE=\).*#\1${{ vars.URL_DEV }}#' docker-compose.yaml
         fi
         cat docker-compose.yaml
 
     - name: Run docker-compose
       run: |
         ls -al
+        cd docker
         docker-compose up -d > /dev/null
