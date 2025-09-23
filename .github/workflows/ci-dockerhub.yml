@@ -55,6 +55,7 @@ jobs:
     - name: Carpeta docker compose
       run: |
         cd docker
+        sed -i '' 's#TAG#${{ github.run_number }}#g' docker-compose.yaml
         if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
           sed -i '' 's#^\(\s*- MESSAGE=\).*#\${{ vars.URL_PRD }}#' docker-compose.yaml
         else
