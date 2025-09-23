@@ -62,11 +62,12 @@ pipeline {
 
                         // Mostrar el archivo modificado
                         sh "cat docker-compose.yaml"
-
-                        // Levantar los servicios con docker-compose
-                        sh "docker compose up -d > /dev/null"
                     }
                 }
+                sh '''
+                    cd ${REAL_PATH}
+                    docker-compose up -d
+                '''
             }
         }
 

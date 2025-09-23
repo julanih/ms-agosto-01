@@ -13,17 +13,19 @@ services:
     networks:
       - devops
   jenkins-slave:
-    image: eclipse-temurin:17-jdk
+    image: jenkins/agent:latest
     container_name: jenkins-slave
-    user: "0"
     init: true
+    group_add:
+      - 986
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
+      - /opt/homebrew/bin/docker-compose:/usr/local/bin/docker-compose
       - /Users/juliany/agente.jk:/home/jenkins/agent
     working_dir: /home/jenkins/agent
     command: >
-      sh -c "curl -sO http://jenkins:8080/jnlpJars/agent.jar;java -jar agent.jar -url http://jenkins:8080/ -secret 3c9c543d07366007830265af9d31261a92f4825668e549233fa35355ae1d02e2 -name slave -webSocket -workDir /home/jenkins/agent"
+      java -jar agent.jar -workDir /home/jenkins/agent -url http://jenkins:8080/ -name slave -webSocket -secret 3c9c543d07366007830265af9d31261a92f4825668e549233fa35355ae1d02e2
     depends_on:
       - jenkins
     networks:
