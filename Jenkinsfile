@@ -37,10 +37,10 @@ pipeline {
         stage('Build & Push Image') {
             steps {
                 script {
-                    def tag = env.BUILD_NUMBER
-                    def image = docker.build("${DOKCERHUB_NAMESPACE}/${IMAGE_NAME}:$BUILD_ID")
+                    def tag = "$BUILD_ID"
+                    def image = docker.build("${DOKCERHUB_NAMESPACE}/${IMAGE_NAME}:${tag}")
                     docker.withRegistry("https://${REGISTRY}", 'dockerhub-creds') {
-                        image.push($BUILD_ID)
+                        image.push(tag)
                     }
                 }
             }
