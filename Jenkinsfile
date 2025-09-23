@@ -37,7 +37,7 @@ pipeline {
         stage('Build & Push Image') {
             steps {
                 script {
-                    def tag = "$BUILD_ID"
+                    def tag = "${env.BUILD_ID}"
                     def image = docker.build("${DOKCERHUB_NAMESPACE}/${IMAGE_NAME}:${tag}")
                     docker.withRegistry("https://${REGISTRY}", 'dockerhub-creds') {
                         image.push(tag)
@@ -51,13 +51,13 @@ pipeline {
                 script {
                     dir('docker') {
                         // Reemplazar TAG en docker-compose.yaml con el número de build
-                        sh "sed -i '' 's#TAG#${env.BUILD_NUMBER}#g' docker-compose.yaml"
+                        sh "sed -i 's#TAG#${env.BUILD_ID}#g' docker-compose.yaml"
 
                         // Reemplazar MESSAGE según la rama
                         if (env.BRANCH_NAME == 'main') {
-                            sh "sed -i '' 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${URL_PRD}|' docker-compose.yaml"
+                            sh "sed -i 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${env.URL_PRD}|' docker-compose.yaml"
                         } else {
-                            sh "sed -i '' 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${URL_DEV}|' docker-compose.yaml"
+                            sh "sed -i 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${env.URL_DEV}|' docker-compose.yaml"
                         }
 
                         // Mostrar el archivo modificado
