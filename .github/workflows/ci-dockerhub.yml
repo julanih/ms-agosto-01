@@ -50,7 +50,6 @@ jobs:
   cd:
     needs: ci
     runs-on: self-hosted
-    if: github.ref_type == 'tag'
 
     steps:
     - name: Carpeta docker compose
