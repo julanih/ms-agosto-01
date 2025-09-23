@@ -45,35 +45,35 @@ pipeline {
                 }
             }
         }
-    }
 
-    stage('Deploy') {
-        steps {
-            script {
-                dir('docker') {
-                    // Reemplazar TAG en docker-compose.yaml con el número de build
-                    sh "sed -i '' 's#TAG#${env.BUILD_NUMBER}#g' docker-compose.yaml"
+        stage('Deploy') {
+            steps {
+                script {
+                    dir('docker') {
+                        // Reemplazar TAG en docker-compose.yaml con el número de build
+                        sh "sed -i '' 's#TAG#${env.BUILD_NUMBER}#g' docker-compose.yaml"
 
-                    // Reemplazar MESSAGE según la rama
-                    if (env.BRANCH_NAME == 'main') {
-                        sh "sed -i '' 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${URL_PRD}|' docker-compose.yaml"
-                    } else {
-                        sh "sed -i '' 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${URL_DEV}|' docker-compose.yaml"
+                        // Reemplazar MESSAGE según la rama
+                        if (env.BRANCH_NAME == 'main') {
+                            sh "sed -i '' 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${URL_PRD}|' docker-compose.yaml"
+                        } else {
+                            sh "sed -i '' 's|^[[:space:]]*- MESSAGE=.*|      - MESSAGE=${URL_DEV}|' docker-compose.yaml"
+                        }
+
+                        // Mostrar el archivo modificado
+                        sh "cat docker-compose.yaml"
+
+                        // Levantar los servicios con docker-compose
+                        sh "docker compose up -d > /dev/null"
                     }
-
-                    // Mostrar el archivo modificado
-                    sh "cat docker-compose.yaml"
-
-                    // Levantar los servicios con docker-compose
-                    sh "docker compose up -d > /dev/null"
                 }
             }
         }
-    }
 
-    stage('Limpiar workspace') {
-        steps {
-            cleanWs()
+        stage('Limpiar workspace') {
+            steps {
+                cleanWs()
+            }
         }
     }
 }
