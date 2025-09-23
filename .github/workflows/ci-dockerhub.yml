@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 env:
-  REGISTRY: docker.io
+  REGISTRY: julanih
   IMAGE_NAME: ${{ secrets.USER_HUB }}/demo-micro
   JAVA_VERSION: '17'
 
