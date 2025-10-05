@@ -16,12 +16,10 @@ services:
     image: jenkins/agent:latest
     container_name: jenkins-slave
     init: true
-    group_add:
-      - 986
+    user: "0"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
-      - /opt/homebrew/bin/docker-compose:/usr/local/bin/docker-compose
       - /Users/juliany/agente.jk:/home/jenkins/agent
     working_dir: /home/jenkins/agent
     command: >

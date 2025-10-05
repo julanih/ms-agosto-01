@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
-metadata: 
+metadata:
   name: demo-micro
   namespace: demo
 spec:
-  type: nodePort
+  type: NodePort
   selector:
     app: demo-micro
   ports:
     - name: http
       port: 80
-      targetPort: 8080
+      targetPort: 8888
       nodePort: 30080

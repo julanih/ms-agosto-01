@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: demo
+  name: ms-agosto-01-config
+data:
+  TZ: Americas/Bogota
